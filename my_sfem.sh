@@ -4,7 +4,7 @@
 #SBATCH -n 24
 #SBATCH -C quad,cache
 #SBATCH -t 01:00:00
-#SBATCH -o /home/cameo/pcp/out_sfem_%j
+#SBATCH -o /home/cameo/pcp/out/out_sfem_%j
 
 set -x 
 set -e
@@ -14,6 +14,7 @@ module load intelmpi/2018.0.128
 
 export VEC=xMIC-AVX512
 #export VEC=xCORE-AVX2
+#export VEC=xHost
 export my_FC=mpiifort #gfortran
 export FCFLAGS_f90="-${VEC}"
 export MPIFC=mpiifort
@@ -37,11 +38,8 @@ export I_MPI_CC=icc
 export I_MPI_CXX=icpc
 export I_MPI_F77=ifort
 export I_MPI_F90=ifort
-#export I_MPI_PROCESS_MANAGER=mpd
-#export I_MPI_PMI_LIBRARY=/usr/lib64/libpmi.so
-#export I_MPI_PIN=1
-#export I_MPI_STATS=all
-#export IPM_LOG=full
+
+echo "TEST12=$TEST12"
 
 if [ "$1" = "clean" ]
 then
@@ -49,11 +47,12 @@ then
     tar -xf /opt/software/tarballs/specfem3d_globe_df5511e7fc1eade655a15b6c8f883cb1c87a5520.tar
     cd specfem3d_globe/
     ./configure $FLAGS_CONFIGURE 
-    cd EXAMPLES/small_benchmark_run_to_test_very_simple_Earth
+    cp -R $SLURM_SUBMIT_DIR/testcase1 EXAMPLES/
+    cd EXAMPLES/testcase1
     sed -i 's/-np/-n/g' run_mesher_solver.bash
     bash -x ./run_this_example.sh
 else
-    cd specfem3d_globe/EXAMPLES/small_benchmark_run_to_test_very_simple_Earth
+    cd specfem3d_globe/EXAMPLES/testcase1
     bash -x ./run_mesher_solver.bash
 fi
 
