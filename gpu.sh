@@ -1,7 +1,12 @@
 #!/bin/bash 
 #SBATCH -J sfem
-#SBATCH -N 1
+#SBATCH -N 2
+#SBATCH -n 24
+#SBATCH --ntasks-per-node=12
 #SBATCH -t 01:00:00
+#SBATCH -p prace
+#SBATCH --gres=gpu:4
+#SBATCH -x davide7 # This node had incorrect cuda version so left out
 
 set -x 
 set -e
@@ -17,7 +22,7 @@ export OMPI_CC=$CC
 export MPICC=`which mpicc`
 
 GCC_OPTS="-fast -Minfo=all -g -mp"
-GFORTRAN_OPTS="-DUSE_OPENMP -Mpreprocess"
+GFORTRAN_OPTS="-Mpreprocess"
 export CFLAGS="$GCC_OPTS"  
 export FFLAGS="$GCC_OPTS $GFORTRAN_OPTS"   
 export CUDA_LIB="/opt/pgi/linuxpower/2016/cuda/8.0/lib64"
