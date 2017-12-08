@@ -34,11 +34,6 @@ cp DATA/CMTSOLUTION OUTPUT_FILES/
 
 export I_MPI_DOMAIN=auto
 export I_MPI_PIN_RESPECT_CPUSET=0
-export OMP_NUM_THREADS=11
-export KMP_AFFINITY=scatter
-
-export KMP_BLOCKTIME=infinite
-export KMP_LIBRARY=turnaround
 
 ./ExpandNodeList -r -p $SLURM_NTASKS_PER_NODE $SLURM_NODELIST > mf
 
@@ -67,6 +62,12 @@ cp OUTPUT_FILES/*.txt $BASEMPIDIR/
 ##
 
 sleep 2
+
+export OMP_NUM_THREADS=$SLURM_CPUS_PER_TASK
+export KMP_AFFINITY=scatter
+
+export KMP_BLOCKTIME=infinite
+export KMP_LIBRARY=turnaround
 
 echo
 echo `date`
