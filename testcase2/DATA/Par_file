@@ -25,8 +25,8 @@ NEX_XI                          = 80
 NEX_ETA                         = 80
 
 # number of MPI processors along the two sides of the first chunk
-NPROC_XI                        = 2
-NPROC_ETA                       = 2
+NPROC_XI                        = 5
+NPROC_ETA                       = 5
 
 #-----------------------------------------------------------
 #

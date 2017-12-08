@@ -3,7 +3,7 @@
 ###########################################################
 
 ## CPUs
-CPUs=24
+CPUs=150
 
 ###########################################################
 
@@ -31,6 +31,13 @@ cp DATA/Par_file OUTPUT_FILES/
 cp DATA/STATIONS OUTPUT_FILES/
 cp DATA/CMTSOLUTION OUTPUT_FILES/
 
+
+export I_MPI_DOMAIN=auto
+export I_MPI_PIN_RESPECT_CPUSET=0
+
+./ExpandNodeList -r -p $SLURM_NTASKS_PER_NODE $SLURM_NODELIST > mf
+
+
 ##
 ## mesh generation
 ##
@@ -41,7 +48,7 @@ echo `date`
 echo "starting MPI mesher on $numnodes processors"
 echo
 
-mpirun -np $numnodes $PWD/bin/xmeshfem3D
+mpirun -machinefile mf -n $numnodes $PWD/bin/xmeshfem3D
 
 echo "  mesher done: `date`"
 echo
@@ -56,12 +63,18 @@ cp OUTPUT_FILES/*.txt $BASEMPIDIR/
 
 sleep 2
 
+export OMP_NUM_THREADS=$SLURM_CPUS_PER_TASK
+export KMP_AFFINITY=scatter
+
+export KMP_BLOCKTIME=infinite
+export KMP_LIBRARY=turnaround
+
 echo
 echo `date`
 echo starting run in current directory $PWD
 echo
 
-mpirun -np $numnodes $PWD/bin/xspecfem3D
+mpirun -machinefile mf -n $numnodes $PWD/bin/xspecfem3D
 
 echo "finished successfully"
 echo `date`
